@@ -5,13 +5,17 @@ import {
   ChatBubbleLeftIcon,
   HomeIcon,
   PaperAirplaneIcon,
+  PlayCircleIcon,
+  XMarkIcon,
 } from "@heroicons/react/20/solid";
-import { Popover, Transition } from "@headlessui/react";
+import { Dialog, Disclosure, Popover, Transition } from "@headlessui/react";
 import Link from "next/link";
 import { Fragment, useState } from "react";
-import { ChevronDownIcon } from "lucide-react";
+import { ChevronDownIcon, Disc } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 function Header() {
+  const navItems = ["Flights", "Car Rentals", "Attractions", "Flight + Hotel"];
   const products = [
     {
       name: "Book a Stay",
@@ -32,9 +36,21 @@ function Header() {
       icon: ChatBubbleLeftIcon,
     },
   ];
+  const callsToAction = [
+    {
+      name: "See Demo Booking",
+      href: "#",
+      icon: PlayCircleIcon,
+    },
+    {
+      name: "Contact Support",
+      href: "#",
+      icon: ChatBubbleLeftIcon,
+    },
+  ];
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   return (
-    <header className="bg-[#013B94]">
+    <header className="bg-gray-900">
       <nav
         className="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8"
         aria-label="Global"
@@ -43,7 +59,7 @@ function Header() {
           <Link href="/" className="-m-1.5 p-1.5">
             <span className="sr-only">Booking.com</span>
             <img
-              src="https://assets.stickpng.com/thumbs/589a4c2b5aa6293a4aac48c9.png"
+              src="https://1000logos.net/wp-content/uploads/2021/05/Booking.Com-logo.png"
               alt=""
               className="h-12 w-auto"
             />
@@ -62,7 +78,7 @@ function Header() {
         <Popover.Group className="hidden lg:flex lg:gap-x-12">
           <Popover className="relative">
             <Popover.Button className="flex items-center gap-x-1 text-sm font-semibold leading-6 text-white">
-              Stays{" "}
+              Stays
               <ChevronDownIcon
                 className="h-5 w-5 flex-none text-white"
                 aria-hidden="true"
@@ -86,7 +102,7 @@ function Header() {
                     >
                       <div className="flex h-11 w-11 flex-none items-center justify-center rounded-lg bg-gray-50 group-hover:bg-gray-200">
                         <items.icon
-                          className="h-6 2-6 text-[#013B94] group-hover:text-blue-600"
+                          className="h-6 w-6 text-[#013B94] group-hover:text-blue-600"
                           aria-hidden="true"
                         />
                       </div>
@@ -111,14 +127,113 @@ function Header() {
                       href={item.href}
                       key={item.name}
                       className="flex items-center justify-center gap-x-2.5 p-3 text-sm font-semibold leading-6 text-[#013B94] hover:bg-gray-100"
-                    ></a>
+                    >
+                      <item.icon
+                        className="h-6 w-6 text-[#013B94]"
+                        aria-hidden="true"
+                      />
+                      {item.name}
+                    </a>
                   ))}
                 </div>
               </Popover.Panel>
             </Transition>
           </Popover>
+          {navItems.map((item) => (
+            <Link
+              href="#"
+              key={item}
+              className="text-sm font-semibold leading-6 text-white hover:text-gray-400"
+            >
+              {item}
+            </Link>
+          ))}
         </Popover.Group>
+        <div className="hidden lg:flex lg:flex-1 lg:justify-end">
+          <a href="#" className="text-sm font-semibold leading-6 text-white">
+            Log in <span aria-hidden="true">&rarr;</span>
+          </a>
+        </div>
       </nav>
+      <Dialog
+        as="div"
+        className="lg:hidden"
+        open={mobileMenuOpen}
+        onClose={setMobileMenuOpen}
+      >
+        <div className="fixed inset-0 z-10" />
+        <Dialog.Panel className="fixed inset-y-0 right-0 z-10 w-full overflow-y-auto bg-gray-900 px-6 py-6 sm:max-2-sm sm:ring-1 sm:ring-black-900/10">
+          <div className="flex items-center justify-between">
+            <a href="#" className="-m-1.5 p-1.5">
+              <span className="sr-only">Booking. com</span>
+              <img
+                className="h-8 w-auto"
+                src="https://static1.squarespace.com/static/5bde0f00c3c16aa95581e2e2/62b4cb1add9d257dd43bb03d/62b653fedc7c895918d19b24/1656116254983/booking+logo+white.png?format=1500w"
+                alt=""
+              />
+            </a>
+            <button
+              type="button"
+              className="-m-2.5 rounded-md p-2.5 text-white"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <span className="sr-only">Close menu</span>
+              <XMarkIcon className="h-6 w-6" aria-hidden="true" />
+            </button>
+          </div>
+          <div className="flow-root mt-6">
+            <div className="-my-6 divide-y divide-gray-500/10">
+              <div className="space-y-2 py-6">
+                <Disclosure as="div" className="-mx-3">
+                  {({ open }) => (
+                    <>
+                      <Disclosure.Button className="flex w-full itmes-center justify-between rounded-lg py-2 pl-3 pr-3.5 text-base font-semibold leading-7 text-white hover:bg-slate-500">
+                        Stays
+                        <ChevronDownIcon
+                          className={cn(
+                            open ? "rotate-180" : "",
+                            "h-5 w-5 flex-none"
+                          )}
+                          aria-hidden="true"
+                        />
+                      </Disclosure.Button>
+                      <Disclosure.Panel className="mt-2 space-y-2">
+                        {[...products, ...callsToAction].map((item) => (
+                          <Disclosure.Button
+                            key={item.name}
+                            as="a"
+                            href={item.href}
+                            className="block rounded-lg py-2 pl-6 pr-3 text-sm font-semibold leading-7 text-white hover:bg-blue-800"
+                          >
+                            {item.name}
+                          </Disclosure.Button>
+                        ))}
+                      </Disclosure.Panel>
+                    </>
+                  )}
+                </Disclosure>
+                {navItems.map((item) => (
+                  <Link
+                    href="#"
+                    key={item}
+                    className="-mx-3 rounded-lg px-3 py-2 text-base font-semibold leading-7 text-white hover:bg-blue-800 block"
+                  >
+                    {item}
+                  </Link>
+                ))}
+              </div>
+              <div className="hpy-6">
+                <a
+                  href="#"
+                  className="-mx-3 rounded-lg px-3 py-2 text-base font-semibold leading-7 text-white hover:bg-blue-800 block"
+                >
+                  Log in <span aria-hidden="true">&rarr;</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </Dialog.Panel>
+      </Dialog>
     </header>
   );
 }
