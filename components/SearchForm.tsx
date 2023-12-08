@@ -1,7 +1,6 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/router";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
@@ -19,6 +18,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { Calendar } from "./ui/calendar";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   location: z.string().min(2, "Must be 2 letters").max(50),
@@ -35,7 +35,7 @@ const formSchema = z.object({
 });
 
 function SearchForm() {
-  //   const router = useRouter();
+  const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -51,6 +51,25 @@ function SearchForm() {
   });
   function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
+    const checkin_monthday = values.dates.from.getDate().toString();
+    const checkin_month = (values.dates.from.getMonth() + 1).toString();
+    const checkin_year = values.dates.from.getFullYear().toString();
+    const checkout_monthday = values.dates.to.getDate().toString();
+    const checkout_month = (values.dates.to.getMonth() + 1).toString();
+    const checkout_year = values.dates.to.getFullYear().toString();
+
+    const checkin = `${checkin_year}-${checkin_month}-${checkin_monthday}`;
+    const checkout = `${checkout_year}-${checkout_month}-${checkout_monthday}`;
+
+    const url = new URL("https://www.booking.com/searchresults.en-gb.html");
+    url.searchParams.set("ss", values.location);
+    url.searchParams.set("group_adults", values.adults);
+    url.searchParams.set("group_children", values.children);
+    url.searchParams.set("no_rooms", values.rooms);
+    url.searchParams.set("checkin", checkin);
+    url.searchParams.set("checkout", checkout);
+
+    router.push(`/search?url=${url.href}`);
   }
   return (
     <Form {...form}>
